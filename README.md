@@ -13,7 +13,7 @@ This project demonstrates a collaborative text editor using Quill (a rich-text e
 1. Clone the repository:
 
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/SwayamBadhe/Collaborative-Text-Editor.git
 
    ```
 
