@@ -22,7 +22,7 @@ This project demonstrates a collaborative text editor using Quill (a rich-text e
    ```bash
    yarn install
    or
-   npm insatall
+   npm install
    ```
 
 ### Usage
