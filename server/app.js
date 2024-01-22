@@ -1,9 +1,36 @@
-var express = require('express');
-var WebSocket = require('ws');
-var http = require('http');
-var ShareDB = require('sharedb');
-var WebSocketJSONStream = require('@teamwork/websocket-json-stream');
+const express = require('express');
+const WebSocket = require('ws');
+const http = require('http');
+const ShareDB = require('sharedb');
+const WebSocketJSONStream = require('@teamwork/websocket-json-stream');
+const mongoose = require('mongoose');
 const richText = require('rich-text');
+const cors = require('cors');
+const cookieParser = require('cookie-parser');
+const authRoute = require('./routes/AuthRoute');
+const { UserSchema, DocumentSchema } = require('./models');
+require('dotenv').config();
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+app.use(cookieParser());
+app.use('/', authRoute);
+
+mongoose
+  .connect(
+    'mongodb+srv://swayampbadhe:piippoo02@taskmanagercluster.v1bzwhw.mongodb.net/Settyl?retryWrites=true&w=majority',
+    {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    }
+  )
+  .then(() => console.log('MongoDB is  connected successfully'))
+  .catch((err) => console.error(err));
+
+const user = mongoose.model('User', UserSchema);
+
+const document = mongoose.model('Document', DocumentSchema);
 
 /**
  * Registering this type allows ShareDB to understand the complex transformations that can occur in
@@ -39,7 +66,6 @@ doc.fetch((error) => {
 });
 
 const startServer = () => {
-  const app = express();
   const server = http.createServer(app);
   const webSocketServer = new WebSocket.Server({ server });
 
