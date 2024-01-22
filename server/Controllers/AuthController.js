@@ -30,3 +30,33 @@ module.exports.SignUp = async (req, res, next) => {
     console.log(error);
   }
 };
+
+module.exports.Login = async (req, res, next) => {
+  try {
+    const { userName, password } = req.body;
+    if (!userName || !password) {
+      return res
+        .status(400)
+        .json({ message: 'Please provide email and password' });
+    }
+    const user = await User.findOne({ userName });
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid credentials' });
+    }
+    const auth = await bcrypt.compare(password, user.password);
+    if (!auth) {
+      return res.status(400).json({ message: 'Invalid credentials' });
+    }
+    const token = createSecretToken(user._id);
+    res.cookie('token', token, {
+      withCredentials: true,
+      httpOnly: false,
+    });
+    res
+      .status(200)
+      .json({ message: 'User logged in successfully', success: true, user });
+    next();
+  } catch (error) {
+    console.log(error);
+  }
+};
