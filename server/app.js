@@ -18,13 +18,10 @@ app.use(cookieParser());
 app.use('/', authRoute);
 
 mongoose
-  .connect(
-    'mongodb+srv://swayampbadhe:piippoo02@taskmanagercluster.v1bzwhw.mongodb.net/Settyl?retryWrites=true&w=majority',
-    {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    }
-  )
+  .connect(process.env.MONGODB_URL, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .then(() => console.log('MongoDB is  connected successfully'))
   .catch((err) => console.error(err));
 
