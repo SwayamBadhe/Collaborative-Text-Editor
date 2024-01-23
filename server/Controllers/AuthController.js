@@ -13,7 +13,7 @@ module.exports.SignUp = async (req, res, next) => {
     }
     const user = await User.create({ userName, password });
     await Document.create({
-      title: 'Default Document',
+      title: userName,
       ownerId: user._id,
       collaborators: [user._id],
       content: [],
