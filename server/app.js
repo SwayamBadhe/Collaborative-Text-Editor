@@ -12,21 +12,7 @@ const { UserSchema, DocumentSchema } = require('./models');
 require('dotenv').config();
 
 const app = express();
-app.use((req, res, next) => {
-  res.header(
-    'Access-Control-Allow-Origin',
-    'https://collaborative-text-editor-n41l.vercel.app'
-  );
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type');
-  res.header('Access-Control-Allow-Credentials', 'true');
-
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-
-  next();
-});
+app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
 app.use('/', authRoute);
