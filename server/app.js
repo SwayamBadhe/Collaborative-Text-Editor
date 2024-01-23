@@ -12,7 +12,12 @@ const { UserSchema, DocumentSchema } = require('./models');
 require('dotenv').config();
 
 const app = express();
-app.use(cors());
+app.use(
+  cors({
+    origin: 'https://collaborative-text-editor-n41l.vercel.app',
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(cookieParser());
 app.use('/', authRoute);
