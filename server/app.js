@@ -55,7 +55,7 @@ const startServer = () => {
   const server = http.createServer(app);
   const webSocketServer = new WebSocket.Server({ server });
 
-  console.log(`WebSocket server started on port ${PORT}`);
+  // console.log(`WebSocket server started on port ${PORT}`);
 
   webSocketServer.on('connection', (webSocket) => {
     console.log('Client connected');

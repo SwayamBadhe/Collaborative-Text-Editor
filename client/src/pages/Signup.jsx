@@ -32,7 +32,7 @@ const Signup = () => {
     console.log(inputValue);
     try {
       const { data } = await axios.post(
-        'https://collaborative-text-editor-gilt.vercel.app/signup',
+        'https://collaborative-text-editor-xi.vercel.app/signup',
         {
           ...inputValue,
         },

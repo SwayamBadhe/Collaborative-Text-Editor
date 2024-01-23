@@ -18,7 +18,7 @@ function Home() {
     const fetchAllDocuments = async () => {
       try {
         const { data } = await axios.get(
-          'https://collaborative-text-editor-gilt.vercel.app/documents'
+          'https://collaborative-text-editor-xi.vercel.app/documents'
         );
         console.log('Received data:', data);
         setDocuments(data.documents);
@@ -34,7 +34,7 @@ function Home() {
 
     try {
       const { data } = await axios.get(
-        `https://collaborative-text-editor-gilt.vercel.app/documents/${document.title}`
+        `https://collaborative-text-editor-xi.vercel.app/documents/${document.title}`
       );
       console.log('Received single data:', data);
       const socket = new WebSocket(
