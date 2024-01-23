@@ -17,8 +17,14 @@ app.use((req, res, next) => {
     'Access-Control-Allow-Origin',
     'https://collaborative-text-editor-n41l.vercel.app'
   );
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
   res.header('Access-Control-Allow-Credentials', 'true');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   next();
 });
 app.use(express.json());
@@ -49,7 +55,7 @@ const startServer = () => {
   const server = http.createServer(app);
   const webSocketServer = new WebSocket.Server({ server });
 
-  console.log(`WebSocket server started on port ${server}`);
+  console.log(`WebSocket server started on port ${PORT}`);
 
   webSocketServer.on('connection', (webSocket) => {
     console.log('Client connected');
