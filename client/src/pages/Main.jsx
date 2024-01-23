@@ -16,7 +16,7 @@ const Main = () => {
         navigate('/login');
       }
       const { data } = await axios.post(
-        'http://localhost:3001',
+        'https://collaborative-text-editor-gilt.vercel.app',
         {},
         { withCredentials: true }
       );
