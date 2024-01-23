@@ -1,9 +1,36 @@
-var express = require('express');
-var WebSocket = require('ws');
-var http = require('http');
-var ShareDB = require('sharedb');
-var WebSocketJSONStream = require('@teamwork/websocket-json-stream');
+const express = require('express');
+const WebSocket = require('ws');
+const http = require('http');
+const ShareDB = require('sharedb');
+const WebSocketJSONStream = require('@teamwork/websocket-json-stream');
+const mongoose = require('mongoose');
 const richText = require('rich-text');
+const cors = require('cors');
+const cookieParser = require('cookie-parser');
+const authRoute = require('./routes/AuthRoute');
+const { UserSchema, DocumentSchema } = require('./models');
+require('dotenv').config();
+
+const app = express();
+app.use(
+  cors({
+    origin: ['http://localhost:3000'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true,
+  })
+);
+app.use(express.json());
+app.use(cookieParser());
+app.use('/', authRoute);
+
+mongoose
+  .connect(process.env.MONGODB_URL)
+  .then(() => console.log('MongoDB is  connected successfully'))
+  .catch((err) => console.error(err));
+
+const user = mongoose.model('User', UserSchema);
+
+const document = mongoose.model('Document', DocumentSchema);
 
 /**
  * Registering this type allows ShareDB to understand the complex transformations that can occur in
@@ -14,32 +41,9 @@ ShareDB.types.register(richText.type);
 
 const shareDBServer = new ShareDB();
 const connection = shareDBServer.connect();
-
-/**
- * The collectionName and documentId are used to identify the document that we want to share.
- */
 const collectionName = 'doc-collection';
-const documentId = 'doc-id';
-const doc = connection.get(collectionName, documentId);
-
-doc.fetch((error) => {
-  if (error) return console.error(error);
-
-  if (!doc.type) {
-    /**
-     * If the document doesn't exist, create it with initial content
-     */
-    doc.create([{ insert: 'Start Typing below' }], 'rich-text', () => {
-      startServer();
-    });
-    return;
-  } else {
-    startServer();
-  }
-});
 
 const startServer = () => {
-  const app = express();
   const server = http.createServer(app);
   const webSocketServer = new WebSocket.Server({ server });
 
@@ -64,3 +68,52 @@ const startServer = () => {
     console.log(`Server listening on port ${PORT}`);
   });
 };
+
+const setupDocument = (documentId) => {
+  return new Promise(async (resolve, reject) => {
+    const doc = connection.get(collectionName, documentId);
+
+    try {
+      await doc.fetch();
+      if (!doc.type) {
+        /**
+         * If the document doesn't exist, create it with initial content
+         */
+        doc.create([{ insert: 'Start Typing below' }], 'rich-text', (err) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(doc);
+          }
+        });
+      } else {
+        resolve(doc);
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+app.get('/documents/:title', async (req, res) => {
+  const title = req.params.title;
+
+  try {
+    const existingDocument = await document.findOne({ title });
+
+    if (!existingDocument) {
+      res.status(404).json({ message: 'Document not found' });
+      return;
+    }
+
+    const documentId = existingDocument._id.toString();
+    await setupDocument(existingDocument.title);
+
+    res.status(200).json({ existingDocument });
+  } catch (error) {
+    console.error('Error fetching document by title:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+
+startServer();
