@@ -17,7 +17,9 @@ function Home() {
   useEffect(() => {
     const fetchAllDocuments = async () => {
       try {
-        const { data } = await axios.get('http://localhost:3001/documents');
+        const { data } = await axios.get(
+          'https://collaborative-text-editor-gilt.vercel.app/documents'
+        );
         console.log('Received data:', data);
         setDocuments(data.documents);
       } catch (error) {
@@ -32,10 +34,12 @@ function Home() {
 
     try {
       const { data } = await axios.get(
-        `http://localhost:3001/documents/${document.title}`
+        `https://collaborative-text-editor-gilt.vercel.app/documents/${document.title}`
       );
       console.log('Received single data:', data);
-      const socket = new WebSocket('ws://127.0.0.1:3001');
+      const socket = new WebSocket(
+        'wss://collaborative-text-editor-gilt.vercel.app'
+      );
       socket.addEventListener('error', (error) => {
         console.error('WebSocket Error:', error);
       });
