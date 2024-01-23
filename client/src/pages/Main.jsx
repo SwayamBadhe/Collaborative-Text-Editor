@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 import { useEffect } from 'react';
 import axios from 'axios';
@@ -49,6 +49,9 @@ const Main = () => {
           onClick={performLogout}
         >
           LOGOUT
+        </button>
+        <button className="bg-cyan-500 hover:bg-cyan-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+          <Link to="/home">Go to Home Page</Link>
         </button>
       </div>
     </>
