@@ -14,7 +14,7 @@ require('dotenv').config();
 const app = express();
 app.use(
   cors({
-    origin: ['http://localhost:3000'],
+    origin: ['https://collaborative-text-editor-n41l.vercel.app/'],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true,
   })
