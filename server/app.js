@@ -41,29 +41,7 @@ ShareDB.types.register(richText.type);
 
 const shareDBServer = new ShareDB();
 const connection = shareDBServer.connect();
-
-/**
- * The collectionName and documentId are used to identify the document that we want to share.
- */
 const collectionName = 'doc-collection';
-const documentId = 'doc-id';
-const doc = connection.get(collectionName, documentId);
-
-doc.fetch((error) => {
-  if (error) return console.error(error);
-
-  if (!doc.type) {
-    /**
-     * If the document doesn't exist, create it with initial content
-     */
-    doc.create([{ insert: 'Start Typing below' }], 'rich-text', () => {
-      startServer();
-    });
-    return;
-  } else {
-    startServer();
-  }
-});
 
 const startServer = () => {
   const server = http.createServer(app);
@@ -90,3 +68,52 @@ const startServer = () => {
     console.log(`Server listening on port ${PORT}`);
   });
 };
+
+const setupDocument = (documentId) => {
+  return new Promise(async (resolve, reject) => {
+    const doc = connection.get(collectionName, documentId);
+
+    try {
+      await doc.fetch();
+      if (!doc.type) {
+        /**
+         * If the document doesn't exist, create it with initial content
+         */
+        doc.create([{ insert: 'Start Typing below' }], 'rich-text', (err) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(doc);
+          }
+        });
+      } else {
+        resolve(doc);
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+app.get('/documents/:title', async (req, res) => {
+  const title = req.params.title;
+
+  try {
+    const existingDocument = await document.findOne({ title });
+
+    if (!existingDocument) {
+      res.status(404).json({ message: 'Document not found' });
+      return;
+    }
+
+    const documentId = existingDocument._id.toString();
+    await setupDocument(existingDocument.title);
+
+    res.status(200).json({ existingDocument });
+  } catch (error) {
+    console.error('Error fetching document by title:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+
+startServer();
