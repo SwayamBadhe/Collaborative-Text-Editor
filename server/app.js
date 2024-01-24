@@ -23,6 +23,14 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 app.use('/', authRoute);
+app.use((req, res, next) => {
+  console.log('Received request:', req.method, req.url);
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+  } else {
+    next();
+  }
+});
 
 mongoose
   .connect(process.env.MONGODB_URL)
