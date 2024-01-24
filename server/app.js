@@ -16,6 +16,8 @@ app.use(
   cors({
     origin: 'https://collaborative-text-editor-n41l.vercel.app',
     credentials: true,
+    methods: ['GET', 'POST', 'OPTIONS'],
+    allowedHeaders: ['Origin', 'Content-Type', 'Accept'],
   })
 );
 app.use(express.json());
