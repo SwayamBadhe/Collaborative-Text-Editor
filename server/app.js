@@ -12,25 +12,25 @@ const { UserSchema, DocumentSchema } = require('./models');
 require('dotenv').config();
 
 const app = express();
+
 app.use(
   cors({
-    origin: 'https://collaborative-text-editor-n41l.vercel.app',
+    origin: '*',
     credentials: true,
     methods: ['GET', 'POST', 'OPTIONS'],
     allowedHeaders: ['Origin', 'Content-Type', 'Accept'],
   })
 );
+
+app.use((req, res, next) => {
+  console.log('Received request:', req.method, req.url);
+  next();
+});
+
+app.options('*', cors());
 app.use(express.json());
 app.use(cookieParser());
 app.use('/', authRoute);
-app.use((req, res, next) => {
-  console.log('Received request:', req.method, req.url);
-  if (req.method === 'OPTIONS') {
-    res.sendStatus(200);
-  } else {
-    next();
-  }
-});
 
 mongoose
   .connect(process.env.MONGODB_URL)
